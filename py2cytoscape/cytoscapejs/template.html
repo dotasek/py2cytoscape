@@ -20,23 +20,9 @@
     <script>
     (function() {
       function render() {
-        $('#{{uuid}}').cytoscape({
-            elements: {
-                nodes: {{nodes}},
-                edges: {{edges}}
-            },
-
-            layout: {
-                name: '{{layout}}'
-            },
-
-            boxSelectionEnabled: true,
-
-            ready: function() {
-                window.cy = this;
-                cy.fit();
-                cy.style().fromJson({{style_json}}).update();
-            }
+        var cy = cytoscape({
+            container: document.getElementById('{{uuid}}'),
+            elements: {{elements}}
         });
       }
 

@@ -16,13 +16,10 @@ STYLE_FILE=os.path.abspath(os.path.dirname(__file__)) + '/' + STYLE_FILE
 
 
 # Default network
-DEF_NODES = [
-    {'data': {'id': 'Network Data'}},
-    {'data': {'id': 'Empty'}}
-]
-
-DEF_EDGES = [
-    {'data': {'id': 'is', 'source': 'Network Data', 'target': 'Empty'}}
+DEF_ELEMENTS = [
+              { 'data': { 'id': 'a' } },
+              { 'data': { 'id': 'b' } },
+              { 'data': { 'id': 'ab', 'source': 'a', 'target': 'b' } }
 ]
 
 DEF_LAYOUT = 'preset'
@@ -54,15 +51,13 @@ def set_styles(style_file=STYLE_FILE):
         STYLES[style['title']] = style['style']
     return STYLES
 
-def render(network,
+def render(elements,
            style=DEF_STYLE,
            layout_algorithm=DEF_LAYOUT,
            background=DEF_BACKGROUND_COLOR,
            height=DEF_HEIGHT,
            width=DEF_WIDTH,
-           style_file=STYLE_FILE,
-           def_nodes=DEF_NODES,
-           def_edges=DEF_EDGES):
+           style_file=STYLE_FILE):
     """Render network data with embedded Cytoscape.js widget.
 
     :param network: dict (required)
@@ -95,18 +90,13 @@ def render(network,
         # Specified by name
         style = STYLES[style]
 
-    if network is None:
-        nodes = def_nodes
-        edges = def_edges
-    else:
-        nodes = network['elements']['nodes']
-        edges = network['elements']['edges']
+    if elements is None:
+        elements = DEF_ELEMENTS;
 
     path = os.path.abspath(os.path.dirname(__file__)) + '/' + HTML_TEMPLATE_FILE
     template = Template(open(path).read())
     cyjs_widget = template.render(
-        nodes=json.dumps(nodes),
-        edges=json.dumps(edges),
+        elements=json.dumps(elements),
         background=background,
         uuid="cy" + str(uuid.uuid4()),
         widget_width=str(width),
@@ -114,7 +104,7 @@ def render(network,
         layout=layout_algorithm,
         style_json=json.dumps(style)
     )
-
+    str(cyjs_widget)
     display(HTML(cyjs_widget))
 
 
