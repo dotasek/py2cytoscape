@@ -22,7 +22,8 @@
       function render() {
         var cy = cytoscape({
             container: document.getElementById('{{uuid}}'),
-            elements: {{elements}}
+            elements: {{elements}},
+            style : {{style}}
         });
       }
 

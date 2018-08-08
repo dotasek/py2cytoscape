@@ -15,15 +15,11 @@ STYLE_FILE = 'default_style.json'
 STYLE_FILE=os.path.abspath(os.path.dirname(__file__)) + '/' + STYLE_FILE
 
 
-# Default network
-DEF_ELEMENTS = [
-              { 'data': { 'id': 'a' } },
-              { 'data': { 'id': 'b' } },
-              { 'data': { 'id': 'ab', 'source': 'a', 'target': 'b' } }
-]
+# Default elements
+DEF_ELEMENTS = []
 
 DEF_LAYOUT = 'preset'
-DEF_STYLE = 'default2'
+DEF_STYLE = []
 
 PRESET_LAYOUTS = {
     'Preset': 'preset',
@@ -52,18 +48,16 @@ def set_styles(style_file=STYLE_FILE):
     return STYLES
 
 def render(elements,
-           style=DEF_STYLE,
+           style,
            layout_algorithm=DEF_LAYOUT,
            background=DEF_BACKGROUND_COLOR,
            height=DEF_HEIGHT,
-           width=DEF_WIDTH,
-           style_file=STYLE_FILE):
+           width=DEF_WIDTH):
     """Render network data with embedded Cytoscape.js widget.
 
-    :param network: dict (required)
+    :param elements: dict (required)
         The network data should be in Cytoscape.js JSON format.
-    :param style: str or dict
-        If str, pick one of the preset style. [default: 'default']
+    :param style: dict (required)
         If dict, it should be Cytoscape.js style CSS object
     :param layout_algorithm: str
         Name of Cytoscape.js layout algorithm
@@ -73,30 +67,22 @@ def render(elements,
         Height of the widget.
     :param width: int
         Width of the widget.
-    :param style_file: a styles file. [default: 'default_style.json']
-    :param def_nodes: default: [
-    {'data': {'id': 'Network Data'}},
-    {'data': {'id': 'Empty'}} ]
-    :param def_edges: default: [ {'data': {'id': 'is', 'source': 'Network Data', 'target': 'Empty'}} ]
     """
 
     from jinja2 import Template
     from IPython.core.display import display, HTML
 
-    STYLES=set_styles(style_file)
-
-    # Load style file if none available
-    if isinstance(style, str):
-        # Specified by name
-        style = STYLES[style]
+    if style is None:
+        style = DEF_STYLE
 
     if elements is None:
-        elements = DEF_ELEMENTS;
+        elements = DEF_ELEMENTS
 
     path = os.path.abspath(os.path.dirname(__file__)) + '/' + HTML_TEMPLATE_FILE
     template = Template(open(path).read())
     cyjs_widget = template.render(
         elements=json.dumps(elements),
+        style=json.dumps(style),
         background=background,
         uuid="cy" + str(uuid.uuid4()),
         widget_width=str(width),
